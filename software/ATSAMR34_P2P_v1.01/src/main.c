@@ -48,6 +48,13 @@
 #include "edbg-eui.h"
 #endif
 
+/* 128 bit Serial number stored address. It is used for seeding the pseudo random number generator - rand() */
+#define S_NO_WORD0 ((uint32_t*)0x0080A00C)
+#define S_NO_WORD1 ((uint32_t*)0x0080A040)
+#define S_NO_WORD2 ((uint32_t*)0x0080A044)
+#define S_NO_WORD3 ((uint32_t*)0x0080A048)
+
+
 /************************** DEFINITIONS **********************************/
 
 /************************** PROTOTYPES **********************************/
@@ -71,11 +78,21 @@ int main ( void )
 #if defined (ENABLE_CONSOLE)
 	sio2host_init();
 #endif
-	
-	// Permanent address for the device is set in miwi_config.h and loaded in global variable myLongAddress
-	// Define SYMBOL MACRO to populate myLongAddress from EDBG_EUI or from MODULE_EUI
-#if (EDBG_EUI_READ == 1 || MODULE_EUI_READ == 1)
-	ReadMacAddress(); 
+
+#if defined (RAK4260)
+    unsigned int seed;
+    seed = ((*S_NO_WORD0) ^ (*S_NO_WORD1) ^ (*S_NO_WORD2) ^ (*S_NO_WORD3));
+    srand(seed);
+    printf("\r\nGenerating Random MAC address \r\n");
+    for (uint8_t i = 0; i < MY_ADDRESS_LENGTH ; i++) {
+	    myLongAddress[i] = rand();
+    }
+#elif		
+//	Permanent address for the device is set in miwi_config.h and loaded in global variable myLongAddress
+//	Define SYMBOL MACRO to populate myLongAddress from EDBG_EUI or from MODULE_EUI
+	#if (EDBG_EUI_READ == 1 || MODULE_EUI_READ == 1)
+		ReadMacAddress(); 
+	#endif
 #endif
 
 	SystemTimerInit();
@@ -131,15 +148,25 @@ SYSTEM_TaskStatus_t APP_TaskHandler(void)
 *
 * Note:			    
 **********************************************************************/
+
 void ReadMacAddress(void)
 {
 #if (BOARD == SAMR34_XPLAINED_PRO && defined(__SAMR34J18B__))
 	// only applicable for SAM R34 Xpro with EDBG on-board
-	uint8_t* peui64 = edbg_eui_read_eui64() ;
-	for (uint8_t i = 0; i < MY_ADDRESS_LENGTH; i++)
-	{
-		myLongAddress[i] = peui64[MY_ADDRESS_LENGTH-i-1] ;
-	}
+//	uint8_t* peui64 = edbg_eui_read_eui64() ;
+//	for (uint8_t i = 0; i < MY_ADDRESS_LENGTH; i++)
+//	{
+//		myLongAddress[i] = peui64[MY_ADDRESS_LENGTH-i-1] ;
+//	}
+	
+   unsigned int seed;
+   seed = ((*S_NO_WORD0) ^ (*S_NO_WORD1) ^ (*S_NO_WORD2) ^ (*S_NO_WORD3));
+   srand(seed);
+   printf("\r\n Generating Random MAC \r\n");
+   for (uint8_t i = 0; i < MY_ADDRESS_LENGTH ; i++) {
+		myLongAddress[i] = rand();
+   }
+   
 #elif (defined(__WLR089U0__))
 	// applicable for module with WLR089 Xpro board or custom board
 	#define NVM_UID_ADDRESS   ((volatile uint16_t *)(0x0080400AU))

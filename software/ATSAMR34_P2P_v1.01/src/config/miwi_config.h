@@ -104,7 +104,9 @@
 // MY_PAN_ID defines the PAN identifier. Use 0xFFFF if prefer a 
 // random PAN ID.
 /*********************************************************************/
+
 #define MY_PAN_ID                       0x1234
+//#define MY_PAN_ID                       0xFFFF
 
 
 /*********************************************************************/
@@ -119,7 +121,7 @@
 
 /*********************************************************************/
 // P2P_CONNECTION_SIZE defines the maximum P2P connections that this 
-// device allowes at the same time. 
+// device allows at the same time. 
 /*********************************************************************/
 #define CONNECTION_SIZE             5
 
@@ -175,7 +177,8 @@
 // ENABLE_BROADCAST will enable the device to broadcast messages for
 // the sleeping devices until they wake up and ask for the messages
 /*********************************************************************/
-//#define ENABLE_BROADCAST
+//RAK4260
+#define ENABLE_BROADCAST
 
 
 /*********************************************************************/

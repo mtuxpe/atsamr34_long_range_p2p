@@ -64,10 +64,12 @@ void DemoOutput_Greeting(void)
 		#endif
         printf("\r\n     RF Transceiver: SX_1276");
         printf("\r\n     Demo Instruction:");
-        printf("\r\n                     Power on the board until LED 1 lights up");
-        printf("\r\n                     to indicate connecting with peer.");
-        printf("\r\n                     Push Button 1 to broadcast message.");
-        printf("\r\n                     LED 1 will be toggled upon receiving messages. ");
+        printf("\r\n     Power on two RAK4260 EVB and open two instances");
+        printf("\r\n     of RAK Serial Port Tool.");
+		printf("\r\n     P2P application starts scanning channels.");
+        printf("\r\n     LED green will blink upon receiving messages.");
+        printf("\r\n     LED blue will blink after send a message.");
+		printf("\r\n     Every 20 seconds a task sends a message broadcast message.");	
         printf("\r\n\r\n");		
     #endif 
 }        
@@ -123,22 +125,32 @@ void DemoOutput_Instruction(void)
 
 void DemoOutput_HandleMessage(void)
 {
-    uint8_t i;
+//    uint8_t i;
 
     if( rxMessage.flags.bits.secEn )
     {
-        sio2host_tx((uint8_t *)"Secured ", sizeof("Secured "));
-    }
+
+		printf("RX Secured message. Size: %d\r\n",rxMessage.PayloadSize);
+	}
+	else
+	{
+		printf("RX Unsecured message. Size: %d\r\n",rxMessage.PayloadSize);
+	}		
 
     if( rxMessage.flags.bits.broadcast )
     {
-        sio2host_tx((uint8_t *)"Broadcast Packet with RSSI ", sizeof("Broadcast Packet with RSSI "));
+
+		printf("Broadcast Packet with RSSI \r\n");
     }
     else
     {
-        sio2host_tx((uint8_t *)"Unicast Packet with RSSI ",sizeof("Unicast Packet with RSSI "));
+
+		printf("Unicast Packet with RSSI \r\n");
     }
-    printf("%02x", rxMessage.PacketRSSI);
+    printf("Payload size %d , RSSI: %02x\r\n", rxMessage.PayloadSize ,rxMessage.PacketRSSI);
+//    printf( "%x %x\r\n", rxMessage.SourceAddress[1],rxMessage.SourceAddress[0] );
+//	printf( "Data: %c %c \r\n",rxMessage.Payload[0], rxMessage.Payload[1]);
+/*		  	
     if( rxMessage.flags.bits.srcPrsnt )
     {
         sio2host_tx((uint8_t *)" from ", sizeof(" from "));
@@ -155,13 +167,14 @@ void DemoOutput_HandleMessage(void)
             }    
         }
     }
-    sio2host_tx((uint8_t *)": ",sizeof(": "));
+*/
+//    sio2host_tx((uint8_t *)": ",sizeof(": "));
     
-    for(i = 0; i < rxMessage.PayloadSize; i++)
-    {
-        sio2host_putchar(rxMessage.Payload[i]);
-    }   
-	printf("\r\n");    
+//    for(i = 0; i < rxMessage.PayloadSize; i++)
+//    {
+//        sio2host_putchar(rxMessage.Payload[i]);
+//    }   
+//	printf("\r\n");    
 } 
 
 void DemoOutput_UpdateTxRx(uint8_t TxNum, uint8_t RxNum)
@@ -274,7 +287,9 @@ void Buttons_init(void)
 
 	/* Configure all three buttons as inputs */
 	port_pin_set_config(WING_BUTTON_1, &conf);
+#ifndef RAK4260
 	port_pin_set_config(WING_BUTTON_2, &conf);
+#endif
 	port_pin_set_config(WING_BUTTON_3, &conf);
 }
 #endif

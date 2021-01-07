@@ -47,6 +47,7 @@
 
 #include "phy.h"								
 #include "sw_timer.h"					
+#include "delay.h"
 
 #if defined(PROTOCOL_P2P)
 
@@ -65,6 +66,59 @@ uint8_t msghandledemo = 0;
 volatile uint8_t send_data = 0;	// Flag used to put a sleeping device(RFD) in sleep - wakeup - transmit cycle
 #endif // #if defined(ENABLE_SLEEP_FEATURE)
 
+void p2p_demo_broadcast(void)
+{
+	uint16_t broadcastAddress = 0xFFFF;
+	uint8_t* dataPtr = NULL;
+	uint8_t dataLen = 0;
+	update_ed = false;
+	chk_sel_status = false;
+	
+	#if defined(ENABLE_SECURITY)
+	dataPtr = MiMem_Alloc(CALC_SEC_PAYLOAD_SIZE(MAX_SEC_UCAST_PAYLOAD));
+	if (NULL == dataPtr)
+	return;
+	for(i = 0; i < MAX_SEC_UCAST_PAYLOAD; i++)
+	#else
+	dataPtr = MiMem_Alloc(CALC_SEC_PAYLOAD_SIZE(MAX_NSEC_UCAST_PAYLOAD));
+	if (NULL == dataPtr)
+	return;
+	
+	for(i = 0; i < MAX_NSEC_UCAST_PAYLOAD; i++)
+	#endif
+	{
+		// Tx Buffer User Data
+		dataPtr[dataLen++] = 'B';
+	}
+	TxSynCount2++;
+	#if defined(ENABLE_SLEEP_FEATURE)
+	// to not enter to the sleep loop until data has been sent
+	send_data = 1;
+	#endif
+	/* Broadcast the message */
+	if(MiApp_SendData(SHORT_ADDR_LEN, (uint8_t *)&broadcastAddress, dataLen, dataPtr, msghandledemo++, true, dataConfcb)== false)
+	{
+		#if defined(ENABLE_SLEEP_FEATURE)
+		PHY_DataConf(FAILURE);
+		#endif // #if defined(ENABLE_SLEEP_FEATURE)
+		DemoOutput_BroadcastFail();
+	}
+	else
+	{
+		// Blink LED1 to indicate sending a packet.
+		LED_Toggle(LED1);
+		delay_ms(100);
+		LED_Toggle(LED1);
+
+		/* Start timer for transmission timeout */
+		SwTimerStart (TxTimerId, MS_TO_US(5000), 0/*SW_TIMEOUT_RELATIVE*/, (void *)TxToutCallback, NULL);
+	}
+
+	/* Update display/console */
+	DemoOutput_UpdateTxRx(++TxNum, RxNum);
+	printf("Tx Messages: %d - Rx Messages: %d\r\n", TxNum, RxNum);
+}
+
 
 #if defined(PERIODIC_TX)
 #define PERIODIC_TX_TIMER	20000
@@ -73,7 +127,8 @@ void PeriodicTxCallback(void)
 	uint8_t dr ;
 	RADIO_GetAttr(SPREADING_FACTOR, &dr) ;
 	printf("Current SF = %d\r\n", dr) ;
-	p2p_demo_unicast_to_parent() ;
+//	p2p_demo_unicast_to_parent(); RAK4260
+	p2p_demo_broadcast();	
 	if(TxNum < 100000)
 	{
 		SwTimerStart (PeriodicTxTimerId, MS_TO_US(PERIODIC_TX_TIMER) , 0/*SW_TIMEOUT_RELATIVE*/, (void *)PeriodicTxCallback, NULL) ;
@@ -305,6 +360,11 @@ void run_p2p_demo(void)
 
 void ReceivedDataIndication (RECEIVED_MESSAGE *ind)
 {
+	// Blink LED0 to indicate receiving a packet.
+	LED_Toggle(LED0);
+	delay_ms(100);
+	LED_Toggle(LED0);
+
     /*******************************************************************/
     // If a packet has been received, handle the information available
     // in rxMessage.
@@ -315,8 +375,6 @@ void ReceivedDataIndication (RECEIVED_MESSAGE *ind)
 		DemoOutput_HandleMessage();
 #endif
 		DemoOutput_UpdateTxRx(TxNum, ++RxNum);
-		// Toggle LED2 to indicate receiving a packet.
-		LED_Toggle(LED0);
 		DemoOutput_Instruction();
 	}
 	else
@@ -343,7 +401,7 @@ void p2p_demo_unicast_to_parent(void)
 	for(i = 0; i < MAX_NSEC_UCAST_PAYLOAD; i++)
 #endif
 	{
-		// Tx Buffer User Data
+		// Tx Buffer User Data 		
 		dataPtr[dataLen++] = 0x55;
 	}
 	TxSynCount2++;
@@ -368,9 +426,11 @@ void p2p_demo_unicast_to_parent(void)
 		TxNum++;
 		SwTimerStart (TxTimerId, MS_TO_US(5000), 0/*SW_TIMEOUT_RELATIVE*/, (void *)TxToutCallback, NULL);
 	}
+#if defined (ENABLE_LCD)
 	// Update the LCD
 	DemoOutput_UpdateTxRx(TxNum, RxNum);
 	DemoOutput_Instruction();
+#endif    
 	printf("Tx Messages: %d - Rx Messages: %d\r\n", TxNum, RxNum) ;	
 }
 

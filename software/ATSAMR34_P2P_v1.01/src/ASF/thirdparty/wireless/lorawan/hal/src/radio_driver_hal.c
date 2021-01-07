@@ -783,11 +783,17 @@ void HAL_EnableRFCtrl(RFCtrl1_t RFCtrl1, RFCtrl2_t RFCtrl2)
 #ifdef RFSWITCH_ENABLE
    if ((RFCtrl1 == RFO_HF) || (RFCtrl2 == RX))
    {
-		port_pin_set_output_level(RF_SWITCH_PIN, RF_SWITCH_ACTIVE);		
+		port_pin_set_output_level(RF_SWITCH_PIN, RF_SWITCH_ACTIVE);
+#ifdef RAK4260
+		port_pin_set_output_level(RF_SWITCH_PWR_PIN,RF_SWITCH_PWR_ACTIVE);
+#endif		
    }
    else if ((RFCtrl1 == PA_BOOST) && (RFCtrl2 == TX))
    {
 	   port_pin_set_output_level(RF_SWITCH_PIN, RF_SWITCH_INACTIVE);
+#ifdef RAK4260
+	   port_pin_set_output_level(RF_SWITCH_PWR_PIN,RF_SWITCH_PWR_INACTIVE);
+#endif
    }
 #endif	
 }
@@ -811,7 +817,10 @@ void HAL_DisableRFCtrl(RFCtrl1_t RFCtrl1, RFCtrl2_t RFCtrl2)
 #ifdef RFSWITCH_ENABLE
 	if ((RFCtrl1 == RFO_HF) || (RFCtrl2 == RX))
 	{
-		port_pin_set_output_level(RF_SWITCH_PIN, RF_SWITCH_INACTIVE);	
+		port_pin_set_output_level(RF_SWITCH_PIN, RF_SWITCH_INACTIVE);
+#ifdef RAK4260
+		port_pin_set_output_level(RF_SWITCH_PWR_PIN,RF_SWITCH_PWR_INACTIVE);
+#endif	
 	}
 #endif	
 }

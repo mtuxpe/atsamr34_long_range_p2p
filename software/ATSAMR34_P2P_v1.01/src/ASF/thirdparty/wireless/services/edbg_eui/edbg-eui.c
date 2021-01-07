@@ -182,7 +182,7 @@ if(random_mac_address == false)
 	  unsigned int seed;
 	  seed = ((*S_NO_WORD0) ^ (*S_NO_WORD1) ^ (*S_NO_WORD2) ^ (*S_NO_WORD3));
 	  srand(seed);
-	  //printf("\r\n Generating Random MAC \r\n");
+	  printf("\r\n Generating Random MAC \r\n");
 	  for (uint8_t i = 0; i < 8; i++) {
 		  *(readbuf+i) = rand();
 	  }

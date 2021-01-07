@@ -84,7 +84,7 @@
 
 
 /* Enable if OLED1 Xplained Pro is connected */
-#define EXT_BOARD_OLED1_XPLAINED_PRO
+//#define EXT_BOARD_OLED1_XPLAINED_PRO
 
 #if (defined EXT_BOARD_OLED1_XPLAINED_PRO)
 

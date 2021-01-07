@@ -58,8 +58,13 @@ void system_board_init(void)
 	/* Configure LEDs as outputs, turn them off */
 	pin_conf.direction  = PORT_PIN_DIR_OUTPUT;
 	port_pin_set_config(LED_1_PIN, &pin_conf);
-	port_pin_set_output_level(LED_1_PIN, LED_1_INACTIVE);
+	port_pin_set_output_level(LED_1_PIN, LED_1_ACTIVE);
 #ifdef RFSWITCH_ENABLE
+	pin_conf.direction = PORT_PIN_DIR_OUTPUT;
+#ifdef RAK4260
+	port_pin_set_config(RF_SWITCH_PWR_PIN, &pin_conf);
+	port_pin_set_output_level(RF_SWITCH_PWR_PIN, RF_SWITCH_PWR_INACTIVE);
+#endif
 	/* Configure RFSWITCH as output */
 	pin_conf.direction  = PORT_PIN_DIR_OUTPUT;
 	port_pin_set_config(RF_SWITCH_PIN, &pin_conf);

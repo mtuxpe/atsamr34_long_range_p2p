@@ -1526,8 +1526,8 @@ miwi_status_t MiApp_ProtocolInit(defaultParametersRomOrRam_t *defaultRomOrRamPar
      *      Protocol initialization has been done. 
      *
      * Parameters: 
-     *      uint8_t addr_len - destionation address length
-     *      uint8_t *addr  - destionation address
+     *      uint8_t addr_len - destination address length
+     *      uint8_t *addr  - destination address
      *      uint8_t msglen - length of the message    
      *      uint8_t *msgpointer - message/frame pointer
 	 *      uint8_t msghandle - message handle
@@ -2250,8 +2250,7 @@ bool MiApp_Get(miwi_params_t id, uint8_t *value)
                     API_UINT16_UNION tmpPANID;
                 #endif
 #if defined (ENABLE_CONSOLE)
-                printf("\r\nScan Channel ");
-                printf("%d",i);
+                printf("\r\nScan Channel %d\r\n",i);
 #endif // #if defined (ENABLE_CONSOLE)				
                 /* choose appropriate channel */
                 MiApp_Set(CHANNEL, &i);

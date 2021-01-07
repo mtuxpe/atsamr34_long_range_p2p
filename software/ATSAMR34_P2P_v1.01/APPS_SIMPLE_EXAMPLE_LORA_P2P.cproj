@@ -754,6 +754,7 @@
       <Value>EDBG_EUI_READ=1</Value>
       <Value>MODULE_EUI_READ=0</Value>
       <Value>PERIODIC_TX</Value>
+      <Value>RAK4260</Value>
     </ListValues>
   </armgcc.compiler.symbols.DefSymbols>
   <armgcc.compiler.directories.IncludePaths>

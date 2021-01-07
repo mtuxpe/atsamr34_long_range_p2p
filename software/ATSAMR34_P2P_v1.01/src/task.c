@@ -222,7 +222,8 @@ bool Initialize_Demo(bool freezer_enable)
     }
     else
     {
-		LED_Off(LED0);
+//		LED_Off(LED0);
+		LED_On(LED0);
 
         MiApp_ProtocolInit(NULL, NULL);
 		
@@ -396,7 +397,7 @@ bool Initialize_Demo(bool freezer_enable)
 #endif
 
         // Turn on LED 1 to indicate connection established
-		LED_On(LED0);
+//		LED_On(LED0);
 #if defined(PROTOCOL_P2P)
         DemoOutput_Instruction();
 #endif    

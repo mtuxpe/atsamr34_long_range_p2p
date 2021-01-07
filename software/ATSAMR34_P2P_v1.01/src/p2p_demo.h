@@ -92,6 +92,7 @@ void dataConfcb(uint8_t handle, miwi_status_t status, uint8_t* msgPointer);
 
 void p2p_demo_unicast_to_parent(void) ;
 void PeriodicTxCallback(void) ;
+void p2p_demo_broadcast(void);
 
 #endif	/* P2P_DEMO_H */
 

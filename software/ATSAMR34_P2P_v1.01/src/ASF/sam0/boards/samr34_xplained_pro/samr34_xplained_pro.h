@@ -76,27 +76,35 @@ void system_board_init(void);
 
 /** \name LED0 definitions
  *  @{ */
-#define LED0_PIN                  PIN_PA19
+// RAK4260 led pins
+#ifdef RAK4260
+
+#define LED0_PIN                  PIN_PA27 //PIN_PA19
 #define LED0_ACTIVE               false
 #define LED0_INACTIVE             !LED0_ACTIVE
 /** @} */
 
 /** \name LED1 definitions
  *  @{ */
-#define LED1_PIN                  PIN_PA18
+#define LED1_PIN                  PIN_PA06
 #define LED1_ACTIVE               false
 #define LED1_INACTIVE             !LED1_ACTIVE
+#elif
+
+#endif
+
 /** @} */
 
 /** \name SW0 definitions
  *  @{ */
-#define SW0_PIN                   PIN_PA28
+// RAK4260 
+#define SW0_PIN                   PIN_PA22
 #define SW0_ACTIVE                false
 #define SW0_INACTIVE              !SW0_ACTIVE
-#define SW0_EIC_PIN               PIN_PA28
-#define SW0_EIC_MUX               MUX_PA28A_EIC_EXTINT8
-#define SW0_EIC_PINMUX            PINMUX_PA28A_EIC_EXTINT8
-#define SW0_EIC_LINE              8
+#define SW0_EIC_PIN               PIN_PA22
+#define SW0_EIC_MUX               MUX_PA22A_EIC_EXTINT6
+#define SW0_EIC_PINMUX            PIN_PA22A_EIC_EXTINT6  //PINMUX_PA28A_EIC_EXTINT8
+#define SW0_EIC_LINE              6 //8
 /** @} */
 
 /** \name RF SWITCH definitions
@@ -106,11 +114,26 @@ void system_board_init(void);
 #define RF_SWITCH_INACTIVE	        !RF_SWITCH_ACTIVE
 /** @} */
 
+/** \name RF SWITCH power pin definitions RAK4260
+ *  @{ */
+#ifdef RAK4260
+#define RF_SWITCH_PWR_PIN				PIN_PA28
+#define RF_SWITCH_PWR_ACTIVE            true
+#define RF_SWITCH_PWR_INACTIVE	        !RF_SWITCH_PWR_ACTIVE
+#endif
+/** @} */
+
 /** \name TCXO PWR Pin definitions
  *  @{ */
+#ifdef RAK4260
+#define TCXO_PWR_PIN				PIN_PB03
+#define TCXO_PWR_ACTIVE             true
+#define TCXO_PWR_INACTIVE	        !TCXO_PWR_ACTIVE
+#elif
 #define TCXO_PWR_PIN				PIN_PA09
 #define TCXO_PWR_ACTIVE             true
 #define TCXO_PWR_INACTIVE	        !TCXO_PWR_ACTIVE
+#endif
 /** @} */
 
 
